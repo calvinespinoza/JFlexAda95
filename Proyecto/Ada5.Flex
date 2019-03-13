@@ -1,3 +1,7 @@
+import java_cup.runtime.*;
+import java.io.Reader;
+import java.util.HashMap;
+
 %%
 
 %unicode
@@ -6,6 +10,19 @@
 %column
 %int
 %standalone
+%cup
+
+%{
+    private Symbol symbol(int type) {
+        return new Symbol(type, yyline, yycolumn);
+    }
+    private Symbol symbol(int type, Object value) {
+        return new Symbol(type, yyline, yycolumn, value);
+    }
+    
+    public static HashMap<String, String> errores = new HashMap<>();
+%}
+
 
 //Ojo Todas las reglas sintacticas deben de estar en un .CUP
 // Tokens 
@@ -62,6 +79,11 @@
 
     leftPar = "("
     rightPar = ")"
+    
+    leftSquareB = "["
+    rightSquareB = "]"
+    leftCurlyB = "{"
+    rightCurlyB = "}"
 
 
 
@@ -84,6 +106,8 @@
     leftlabel="<<"
     rightlabel=">>"
     box="<>"
+    NotEQUAL= {"/"} {equal}
+
 
     
 
@@ -132,43 +156,192 @@
 %%
 
 <YYINITIAL> {
-    {RESERVED} {System.out.println(yytext() +"\t\t RESERVED WORD");}
-    {dataType} {System.out.println(yytext() + "\t\t DATA TYPE");}
-    {IDENTIFIER} {System.out.println(yytext() +"\t\t IDENTIFIER");}
-    {INTEGER} {System.out.println(yytext() +"\t\t INTEGER");}
-    {STRING} {System.out.println(yytext() +"\t\t STRING");}
-    {DECIMAL} {System.out.println(yytext() +"\t\t DECIMAL");}
+    {RESERVED} {System.out.println(yytext() +"\t\t RESERVED WORD");
+    
+                     return symbol(sym.RESERVED); 
+
+                }
 
 
+    {dataType} {System.out.println(yytext() + "\t\t DATA TYPE");
+                
+                return symbol(sym.dataType);
 
-    {colon} {System.out.println(yytext() +"\t\t COLON");}
-    {semicolon} {System.out.println(yytext() + "\t\t SEMICOLON");}
-    {ampersand} {System.out.println(yytext() + "\t\t AMPERSAND");}
-    {comma} {System.out.println(yytext() + "\t\t COMMA");}
-    {point} {System.out.println(yytext() + "\t\t POINT");}
-    {numbersign} {System.out.println(yytext() + "\t\t NUMBER SIGN");}
-    {apostrophe} {System.out.println(yytext() + "\t\t APOSTROPHE");}    
-    {numbersign} {System.out.println(yytext() + "\t\t NUMBER SIGN");}
-    {leftPar} {System.out.println(yytext() + "\t\t LEFT PARENTHESIS");}
-    {rightPar} {System.out.println(yytext() + "\t\t RIGHT PARENTHESIS");}
-    {hyphen} {System.out.println(yytext() + "\t\t HYPHEN");}
-    {arrow} {System.out.println(yytext() + "\t\t ARROW");}
-    {ddot} {System.out.println(yytext() + "\t\t DOUBLE DOT");}
-    {dstar} {System.out.println(yytext() + "\t\t DOUBLE STAR");}
-    {arrow} {System.out.println(yytext() + "\t\t ARROW");}
-    {leftlabel} {System.out.println(yytext() + "\t\t LEFT LABEL");}
-    {rightlabel} {System.out.println(yytext() + "\t\t RIGHT LABEL");}
-    {box} {System.out.println(yytext() + "\t\t BOX");}
 
+    }
+
+    {IDENTIFIER} {System.out.println(yytext() +"\t\t IDENTIFIER");
+
+                return symbol(sym.IDENTIFIER);
+    
+    }
+
+    {INTEGER} {System.out.println(yytext() +"\t\t INTEGER");
+
+                return new Symbol(sym.INTEGER,0,0,yytext());
+    
+    }
+
+
+    {STRING} {System.out.println(yytext() +"\t\t STRING");
+                
+                return symbol(sym.STRING);
+
+    }
+
+    {DECIMAL} {System.out.println(yytext() +"\t\t DECIMAL");
+
+
+                return symbol(sym.DECIMAL);
+
+
+    }
+
+
+    {colon} {System.out.println(yytext() +"\t\t COLON");
+                
+                return symbol(sym.colon);
+    }
+
+    {semicolon} {System.out.println(yytext() + "\t\t SEMICOLON");
+
+                return symbol(sym.semicolon);
+
+    }
+
+    {ampersand} {System.out.println(yytext() + "\t\t AMPERSAND");
+
+                return symbol(sym.ampersand);
+    }
+
+    {comma} {System.out.println(yytext() + "\t\t COMMA");
+    
+                return symbol(sym.comma);
+    
+    }
+
+
+    {point} {System.out.println(yytext() + "\t\t POINT");
+
+                return symbol(sym.point);
+    }
+
+    {numbersign} {System.out.println(yytext() + "\t\t NUMBER SIGN");
+    
+                return symbol(sym.numbersign);
+
+    }
+
+    {apostrophe} {System.out.println(yytext() + "\t\t APOSTROPHE");
+    
+                return symbol(sym.apostrophe);
+
+    }
+
+    {numbersign} {System.out.println(yytext() + "\t\t NUMBER SIGN");
+
+                return symbol(sym.numbersign);
+    
+    }
+
+    {leftPar} {System.out.println(yytext() + "\t\t LEFT PARENTHESIS");
+
+                return symbol(sym.leftPar);
+    
+    }
+
+    {rightPar} {System.out.println(yytext() + "\t\t RIGHT PARENTHESIS");
+    
+                return symbol(sym.rightPar);
+
+    }
+
+    {hyphen} {System.out.println(yytext() + "\t\t HYPHEN");
+
+                return symbol(sym.hyphen);
+
+    }
+
+    {arrow} {System.out.println(yytext() + "\t\t ARROW");
+    
+                return symbol(sym.arrow);
+
+    }
+
+    {ddot} {System.out.println(yytext() + "\t\t DOUBLE DOT");
+
+                return symbol(sym.ddot);
+    
+    }
+
+    {dstar} {System.out.println(yytext() + "\t\t DOUBLE STAR");
+    
+                return symbol(sym.dstar);
+
+    }
+
+    //{arrow} {System.out.println(yytext() + "\t\t ARROW");}
+
+    {leftlabel} {System.out.println(yytext() + "\t\t LEFT LABEL");
+
+                return symbol(sym.leftlabel);
+
+    }
+
+    {rightlabel} {System.out.println(yytext() + "\t\t RIGHT LABEL");
+
+                return symbol(sym.rightlabel);
+    
+    }
+
+    {box} {System.out.println(yytext() + "\t\t BOX");
+    
+                return symbol(sym.box);
+
+    }
 
 
     //Operadores
-    {ASIG} {System.out.println(yytext() +"\t\t ASIGNACION");}
-    {OP_SUMA} {System.out.println(yytext() +"\t\t ADDING OPERATOR");}
-    {OP_MULT} {System.out.println(yytext() +"\t\t MULTIPLYING OPERATOR");}
-    {OP_LOGIC} {System.out.println(yytext() +"\t\t LOGIC OPERATOR ");}
+    {ASIG} {System.out.println(yytext() +"\t\t ASIGNACION");
+    
+                return symbol(sym.ASIG);
+
+    }
+
+    {OP_SUMA} {System.out.println(yytext() +"\t\t ADDING OPERATOR");
+    
+                return symbol(sym.OP_SUMA);
+
+    }
+
+    {OP_MULT} {System.out.println(yytext() +"\t\t MULTIPLYING OPERATOR");
+    
+                return symbol(sym.OP_MULT);
+
+    }
+
+    {OP_LOGIC} {System.out.println(yytext() +"\t\t LOGIC OPERATOR ");
+
+                return symbol(sym.OP_LOGIC);
+    
+    }
+
     {space} {}
-    . {System.out.println(yytext() + "\t\t ERROR");}
+    //. {System.out.println(yytext() + "\t\t ERROR");}
 }
+
+[^] 
+{ 
+  String mensaje = "";
+  mensaje += ("\n************************************");
+  mensaje += ("\n****Caracter invalido ==> "+yytext()+" <== ****");
+  mensaje += ("\nencontrado en la linea ");
+  mensaje += ((yyline + 1) + " y columna "  + (yycolumn + 1));
+  mensaje += ("\n************************************\n");
+  String keyString = (yyline + 1) + (yycolumn + 1) + "";
+  errores.put(keyString, yytext());
+  System.err.println(mensaje);
+}
+
 
 
